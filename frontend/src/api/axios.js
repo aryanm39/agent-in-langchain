@@ -1,7 +1,39 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000",
+});
+
+const TOKEN_KEY = "agent_run_token";
+const USER_KEY = "agent_run_user";
+
+export function getStoredToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredUser() {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveAuth({ access_token, user }) {
+  localStorage.setItem(TOKEN_KEY, access_token);
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
+export function clearAuthStorage() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+}
+
+API.interceptors.request.use((config) => {
+  const token = getStoredToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });
 
 API.interceptors.response.use(
@@ -15,6 +47,15 @@ API.interceptors.response.use(
     return Promise.reject(new Error(msg));
   }
 );
+
+export const signupUser = async ({ username, password }) =>
+  (await API.post("/signup", { username, password })).data;
+
+export const loginUser = async ({ username, password }) => {
+  const data = (await API.post("/login", { username, password })).data;
+  saveAuth(data);
+  return data;
+};
 
 export const fetchResumes = async () =>
   (await API.get("/resumes")).data.resumes ?? [];

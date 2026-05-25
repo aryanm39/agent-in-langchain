@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loadResumes, uploadNewResume } from "./store/resumesSlice";
 import { setInput, sendQuery, loadSessionMessages, clearChat } from "./store/chatSlice";
 import { deleteSession, setActiveSession, upsertSession } from "./store/sessionsSlice";
+import { login, logout, signup, clearAuthError, clearSignupSuccess } from "./store/authSlice";
 
 const IconTrash = () => (
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -81,25 +82,25 @@ function SourcesPanel({ sources, onClose }) {
       className="flex flex-col h-full overflow-hidden shrink-0"
       style={{
         width: "300px",
-        borderLeft: "1px solid #1a1e2a",
-        background: "#0b0d12",
+        borderLeft: "1px solid #e2e8f0",
+        background: "#ffffff",
         animation: "slideInRight 0.2s ease",
       }}
     >
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3.5 shrink-0"
-        style={{ borderBottom: "1px solid #1a1e2a" }}
+        style={{ borderBottom: "1px solid #e2e8f0" }}
       >
-        <span className="text-[0.78rem] font-semibold" style={{ color: "#cdd6f4" }}>
+        <span className="text-[18px] font-semibold" style={{ color: "#000000" }}>
           {sources.length} source{sources.length !== 1 ? "s" : ""}
         </span>
         <button
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center rounded cursor-pointer border-none transition-all"
-          style={{ background: "transparent", color: "#6c7a96" }}
-          onMouseEnter={e => { e.currentTarget.style.background = "#1a1e2a"; e.currentTarget.style.color = "#cdd6f4"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6c7a96"; }}
+          style={{ background: "transparent", color: "#000000" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#e2e8f0"; e.currentTarget.style.color = "#000000"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#000000"; }}
         >
           <IconX />
         </button>
@@ -117,9 +118,9 @@ function SourcesPanel({ sources, onClose }) {
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col gap-1.5 rounded-lg px-3 py-3 transition-all"
-              style={{ background: "#13161d", border: "1px solid #252a38", textDecoration: "none" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)"; e.currentTarget.style.background = "#181c25"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "#252a38"; e.currentTarget.style.background = "#13161d"; }}
+              style={{ background: "#f3f5f9", border: "1px solid #d7dee8", textDecoration: "none" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,166,35,0.3)"; e.currentTarget.style.background = "#e9eef6"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#d7dee8"; e.currentTarget.style.background = "#f3f5f9"; }}
             >
               <div className="flex items-center gap-2">
                 {favicon ? (
@@ -132,15 +133,15 @@ function SourcesPanel({ sources, onClose }) {
                     onError={e => { e.currentTarget.style.display = "none"; }}
                   />
                 ) : (
-                  <span style={{ color: "#6c7a96", flexShrink: 0 }}><IconGlobe /></span>
+                  <span style={{ color: "#000000", flexShrink: 0 }}><IconGlobe /></span>
                 )}
-                <span className="text-[0.62rem] tracking-wide uppercase truncate" style={{ color: "#6c7a96" }}>
+                <span className="text-[18px] tracking-wide uppercase truncate" style={{ color: "#000000" }}>
                   {domain}
                 </span>
               </div>
               <span
-                className="text-[0.72rem] leading-snug"
-                style={{ color: "#cdd6f4", wordBreak: "break-all" }}
+                className="text-[18px] leading-snug"
+                style={{ color: "#000000", wordBreak: "break-all" }}
               >
                 {src.replace(/^https?:\/\//, "").replace(/\/$/, "")}
               </span>
@@ -169,18 +170,18 @@ function SessionRow({ session, isActive, onSelect, onDelete }) {
         className="flex-1 min-w-0 px-3 py-2 text-left flex flex-col gap-0.5 bg-transparent border-none cursor-pointer"
         onClick={() => onSelect(session)}
       >
-        <span className="flex items-center gap-2 truncate">
-          <span style={{ color: isActive ? "#f5a623" : "#6c7a96" }}><IconMsg /></span>
-          <span className="truncate text-[0.72rem]" style={{ color: isActive ? "#cdd6f4" : "#8a97b0" }}>
+        <span className="flex items-start gap-2">
+          <span style={{ color: isActive ? "#000000" : "#000000" }}><IconMsg /></span>
+          <span className="text-[18px]" style={{ color: isActive ? "#000000" : "#000000", whiteSpace: "normal", overflowWrap: "anywhere" }}>
             {session.title}
           </span>
         </span>
       </button>
       <button
         className="opacity-0 group-hover:opacity-100 mr-2 shrink-0 w-5 h-5 flex items-center justify-center rounded bg-transparent border-none cursor-pointer transition-all"
-        style={{ color: "#6c7a96" }}
-        onMouseEnter={e => e.currentTarget.style.color = "#f38ba8"}
-        onMouseLeave={e => e.currentTarget.style.color = "#6c7a96"}
+        style={{ color: "#000000" }}
+        onMouseEnter={e => e.currentTarget.style.color = "#000000"}
+        onMouseLeave={e => e.currentTarget.style.color = "#000000"}
         onClick={e => { e.stopPropagation(); onDelete(session.id); }}
       >
         <IconTrash />
@@ -196,13 +197,13 @@ function AgentMessage({ msg, onShowSources }) {
       <div className="flex items-start gap-3">
         <div
           className="shrink-0 w-7 h-7 rounded flex items-center justify-center mt-0.5"
-          style={{ background: "rgba(245,166,35,0.12)", border: "1px solid rgba(245,166,35,0.2)", color: "#f5a623" }}
+          style={{ background: "rgba(245,166,35,0.12)", border: "1px solid rgba(245,166,35,0.2)", color: "#000000" }}
         >
           <IconBot />
         </div>
         <div
-          className="flex-1 rounded px-4 py-3 text-[0.82rem] leading-relaxed"
-          style={{ background: "#13161d", border: "1px solid #252a38", color: "#cdd6f4", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+          className="flex-1 rounded px-4 py-3 text-[18px] leading-relaxed"
+          style={{ background: "#f3f5f9", border: "1px solid #d7dee8", color: "#000000", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
         >
           {msg.text}
         </div>
@@ -212,10 +213,10 @@ function AgentMessage({ msg, onShowSources }) {
         <div className="ml-10">
           <button
             onClick={() => onShowSources(msg.id, msg.sources)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded cursor-pointer transition-all border-none text-[0.68rem]"
-            style={{ background: "#13161d", border: "1px solid #252a38", color: "#6c7a96" }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"; e.currentTarget.style.color = "#f5a623"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "#252a38"; e.currentTarget.style.color = "#6c7a96"; }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded cursor-pointer transition-all border-none text-[18px]"
+            style={{ background: "#f3f5f9", border: "1px solid #d7dee8", color: "#000000" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"; e.currentTarget.style.color = "#000000"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d7dee8"; e.currentTarget.style.color = "#000000"; }}
           >
             <span className="flex items-center" style={{ marginRight: "2px" }}>
               {msg.sources.slice(0, 3).map((src, i) => {
@@ -227,7 +228,7 @@ function AgentMessage({ msg, onShowSources }) {
                     alt=""
                     width={12}
                     height={12}
-                    style={{ borderRadius: "2px", marginLeft: i > 0 ? "-3px" : 0, outline: "1px solid #0d0f14" }}
+                    style={{ borderRadius: "2px", marginLeft: i > 0 ? "-3px" : 0, outline: "1px solid #ffffff" }}
                     onError={e => { e.currentTarget.style.display = "none"; }}
                   />
                 ) : null;
@@ -246,10 +247,129 @@ function UserMessage({ msg }) {
   return (
     <div className="flex justify-end msg-enter">
       <div
-        className="max-w-[72%] rounded px-4 py-2.5 text-[0.82rem]"
-        style={{ background: "rgba(245,166,35,0.08)", border: "1px solid rgba(245,166,35,0.18)", color: "#e8d5b0", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+        className="max-w-[72%] rounded px-4 py-2.5 text-[18px]"
+        style={{ background: "rgba(245,166,35,0.08)", border: "1px solid rgba(245,166,35,0.18)", color: "#000000", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
       >
         {msg.text}
+      </div>
+    </div>
+  );
+}
+
+function AuthScreen({ loading, error, success, onLogin, onSignup, onClearError, onClearSuccess }) {
+  const [mode, setMode] = useState("login");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [localError, setLocalError] = useState("");
+
+  const isSignup = mode === "signup";
+
+  useEffect(() => {
+    if (success && isSignup) {
+      setUsername("");
+      setPassword("");
+    }
+  }, [success, isSignup]);
+
+  function switchMode(nextMode) {
+    setMode(nextMode);
+    setUsername("");
+    setPassword("");
+    setLocalError("");
+    onClearError();
+    onClearSuccess();
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const cleanUsername = username.trim();
+    if (!cleanUsername || !password) {
+      setLocalError("Email and password are required.");
+      return;
+    }
+    setLocalError("");
+    onClearSuccess();
+    if (isSignup) onSignup({ username: cleanUsername, password });
+    else onLogin({ username: cleanUsername, password });
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "#f7f8fb", fontFamily: "'JetBrains Mono', monospace" }}>
+      <div className="w-full max-w-md rounded-xl p-6" style={{ background: "#ffffff", border: "1px solid #d7dee8", boxShadow: "0 24px 80px rgba(15,23,42,0.12)" }}>
+        <div className="mb-6">
+          <div className="font-display text-[20px] font-bold" style={{ color: "#000000", fontFamily: "'Syne', sans-serif", letterSpacing: "-0.02em" }}>
+            agent<span style={{ color: "#000000" }}>.</span><span style={{ color: "#000000" }}>run</span>
+          </div>
+          <p className="text-[18px] mt-2" style={{ color: "#000000" }}>
+            {isSignup ? "Create an account to start chatting." : "Login to continue to your assistant."}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mb-5">
+          <button
+            type="button"
+            onClick={() => switchMode("login")}
+            className="rounded px-3 py-2 text-[18px] border cursor-pointer transition-all"
+            style={{ background: !isSignup ? "rgba(245,166,35,0.1)" : "transparent", borderColor: !isSignup ? "rgba(245,166,35,0.35)" : "#d7dee8", color: !isSignup ? "#000000" : "#000000" }}
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => switchMode("signup")}
+            className="rounded px-3 py-2 text-[18px] border cursor-pointer transition-all"
+            style={{ background: isSignup ? "rgba(245,166,35,0.1)" : "transparent", borderColor: isSignup ? "rgba(245,166,35,0.35)" : "#d7dee8", color: isSignup ? "#000000" : "#000000" }}
+          >
+            Sign up
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[18px] uppercase tracking-widest" style={{ color: "#000000" }}>Email</span>
+            <input
+              type="email"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+              className="rounded px-3 py-2.5 text-[18px] outline-none border"
+              style={{ background: "#f3f5f9", borderColor: "#d7dee8", color: "#000000" }}
+              disabled={loading}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[18px] uppercase tracking-widest" style={{ color: "#000000" }}>Password</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete={isSignup ? "new-password" : "current-password"}
+              className="rounded px-3 py-2.5 text-[18px] outline-none border"
+              style={{ background: "#f3f5f9", borderColor: "#d7dee8", color: "#000000" }}
+              disabled={loading}
+            />
+          </label>
+
+          {(localError || error) && (
+            <p className="text-[18px] leading-relaxed" style={{ color: "#000000" }}>{localError || error}</p>
+          )}
+
+          {success && !localError && !error && (
+            <p className="text-[18px] leading-relaxed" style={{ color: "#000000" }}>{success}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-1 rounded px-3 py-2.5 text-[18px] font-semibold border-none cursor-pointer transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ background: "#f5a623", color: "#000000" }}
+          >
+            {loading ? "Please wait…" : isSignup ? "Create account" : "Login"}
+          </button>
+        </form>
       </div>
     </div>
   );
@@ -262,6 +382,11 @@ export default function App() {
   const abortRef     = useRef(null);
 
   const [sidebarSources, setSidebarSources] = useState(null);
+
+  const user        = useSelector(s => s.auth.user);
+  const authLoading = useSelector(s => s.auth.loading);
+  const authError   = useSelector(s => s.auth.error);
+  const signupSuccess = useSelector(s => s.auth.signupSuccess);
 
   const resumes      = useSelector(s => s.resumes.list);
   const loadingList  = useSelector(s => s.resumes.loadingList);
@@ -280,9 +405,33 @@ export default function App() {
 
   const canSend = input.trim().length > 0 && !loading;
 
+  const handleLogin = useCallback((credentials) => {
+    dispatch(login(credentials));
+  }, [dispatch]);
+
+  const handleSignup = useCallback((credentials) => {
+    dispatch(signup(credentials));
+  }, [dispatch]);
+
+  const handleClearAuthError = useCallback(() => {
+    dispatch(clearAuthError());
+  }, [dispatch]);
+
+  const handleClearSignupSuccess = useCallback(() => {
+    dispatch(clearSignupSuccess());
+  }, [dispatch]);
+
   const closeSourcesPanel = useCallback(() => {
     setSidebarSources(null);
   }, []);
+
+  const handleLogout = useCallback(() => {
+    abortRef.current?.abort();
+    dispatch(logout());
+    dispatch(clearChat());
+    dispatch(setActiveSession(null));
+    closeSourcesPanel();
+  }, [dispatch, closeSourcesPanel]);
 
   const handleToggleSources = useCallback((messageId, sources) => {
     setSidebarSources(current =>
@@ -290,7 +439,7 @@ export default function App() {
     );
   }, []);
 
-  useEffect(() => { dispatch(loadResumes()); }, [dispatch]);
+  useEffect(() => { if (user) dispatch(loadResumes()); }, [dispatch, user]);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
 
   useEffect(() => {
@@ -346,37 +495,66 @@ export default function App() {
     dispatch(sendQuery({ query: input.trim(), sessionId: sid, signal: abortRef.current.signal }));
   }
 
+  if (!user) {
+    return (
+      <AuthScreen
+        loading={authLoading}
+        error={authError}
+        success={signupSuccess}
+        onLogin={handleLogin}
+        onSignup={handleSignup}
+        onClearError={handleClearAuthError}
+        onClearSuccess={handleClearSignupSuccess}
+      />
+    );
+  }
+
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "#0d0f14", fontFamily: "'JetBrains Mono', monospace" }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: "#f7f8fb", fontFamily: "'JetBrains Mono', monospace" }}>
 
       {/* ── Left Sidebar ── */}
-      <aside className="w-60 min-w-[240px] flex flex-col overflow-hidden shrink-0" style={{ background: "#0b0d12", borderRight: "1px solid #1a1e2a" }}>
+      <aside className="w-[340px] min-w-[340px] flex flex-col overflow-hidden shrink-0" style={{ background: "#ffffff", borderRight: "1px solid #e2e8f0" }}>
 
-        <div className="px-4 pt-5 pb-4 shrink-0" style={{ borderBottom: "1px solid #1a1e2a" }}>
-          <div className="font-display text-[1.05rem] font-bold" style={{ color: "#f5a623", fontFamily: "'Syne', sans-serif", letterSpacing: "-0.02em" }}>
-            agent<span style={{ color: "#6c7a96" }}>.</span><span style={{ color: "#cdd6f4" }}>run</span>
+        <div className="px-4 pt-5 pb-4 shrink-0" style={{ borderBottom: "1px solid #e2e8f0" }}>
+          <div className="font-display text-[20px] font-bold" style={{ color: "#000000", fontFamily: "'Syne', sans-serif", letterSpacing: "-0.02em" }}>
+            agent<span style={{ color: "#000000" }}>.</span><span style={{ color: "#000000" }}>run</span>
+          </div>
+          <div className="flex items-center justify-between gap-2 mt-3">
+            <div className="min-w-0">
+              <p className="text-[18px] break-all" style={{ color: "#000000" }}>{user.username}</p>
+              <p className="text-[18px] uppercase tracking-widest" style={{ color: "#000000" }}>{user.role}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="shrink-0 rounded px-2 py-1 text-[18px] cursor-pointer transition-all border"
+              style={{ background: "transparent", borderColor: "#d7dee8", color: "#000000" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"; e.currentTarget.style.color = "#000000"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#d7dee8"; e.currentTarget.style.color = "#000000"; }}
+            >
+              Logout
+            </button>
           </div>
         </div>
 
         <div className="px-3 py-3 shrink-0">
           <button
             onClick={handleNewChat}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded text-[0.72rem] cursor-pointer transition-all border"
-            style={{ background: "transparent", border: "1px solid #252a38", color: "#6c7a96" }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"; e.currentTarget.style.color = "#f5a623"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "#252a38"; e.currentTarget.style.color = "#6c7a96"; }}
+            className="flex items-center gap-2 w-full px-3 py-2 rounded text-[18px] cursor-pointer transition-all border"
+            style={{ background: "transparent", border: "1px solid #d7dee8", color: "#000000" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"; e.currentTarget.style.color = "#000000"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d7dee8"; e.currentTarget.style.color = "#000000"; }}
           >
             <IconPlus /> New chat
           </button>
         </div>
 
         <div className="px-4 pb-1 shrink-0">
-          <span className="text-[0.58rem] tracking-widest uppercase" style={{ color: "#343c52" }}>Sessions</span>
+          <span className="text-[18px] tracking-widest uppercase" style={{ color: "#000000" }}>Sessions</span>
         </div>
 
         <div className="flex-1 overflow-y-auto px-2 pb-2 flex flex-col gap-0.5 min-h-0">
           {sessions.length === 0 && (
-            <p className="text-[0.68rem] px-2 py-1.5" style={{ color: "#343c52" }}>No sessions yet.</p>
+            <p className="text-[18px] px-2 py-1.5" style={{ color: "#000000" }}>No sessions yet.</p>
           )}
           {sessions.map(s => (
             <SessionRow
@@ -389,22 +567,22 @@ export default function App() {
           ))}
         </div>
 
-        <div className="shrink-0" style={{ borderTop: "1px solid #1a1e2a" }} />
+        <div className="shrink-0" style={{ borderTop: "1px solid #e2e8f0" }} />
 
         <div className="px-4 pt-3 pb-1 shrink-0">
-          <span className="text-[0.58rem] tracking-widest uppercase" style={{ color: "#343c52" }}>Indexed PDFs</span>
+          <span className="text-[18px] tracking-widest uppercase" style={{ color: "#000000" }}>Indexed PDFs</span>
         </div>
 
         <div className="px-2 pb-3 flex flex-col gap-0.5 max-h-40 overflow-y-auto shrink-0">
           {loadingList ? (
-            <p className="text-[0.68rem] px-2" style={{ color: "#343c52" }}>Loading…</p>
+            <p className="text-[18px] px-2" style={{ color: "#000000" }}>Loading…</p>
           ) : resumes.length === 0 ? (
-            <p className="text-[0.68rem] px-2" style={{ color: "#343c52" }}>No PDFs indexed.</p>
+            <p className="text-[18px] px-2" style={{ color: "#000000" }}>No PDFs indexed.</p>
           ) : (
             resumes.map(r => (
-              <div key={r} className="flex items-center gap-2 px-3 py-1 rounded text-[0.68rem]" style={{ color: "#6c7a96" }}>
-                <span style={{ color: "#f5a623" }}>▸</span>
-                <span className="truncate" style={{ color: "#8a97b0" }}>{r.replace(/\.pdf$/i, "")}</span>
+              <div key={r} className="flex items-center gap-2 px-3 py-1 rounded text-[18px]" style={{ color: "#000000" }}>
+                <span style={{ color: "#000000" }}>▸</span>
+                <span className="flex-1" style={{ color: "#000000", overflowWrap: "anywhere" }}>{r.replace(/\.pdf$/i, "")}</span>
               </div>
             ))
           )}
@@ -412,9 +590,9 @@ export default function App() {
 
         {(uploadStatus || uploadError || error) && (
           <div className="px-4 pb-3 flex flex-col gap-1 shrink-0">
-            {uploadStatus && <p className="text-[0.62rem]" style={{ color: "#a6e3a1" }}>{uploadStatus}</p>}
-            {uploadError  && <p className="text-[0.62rem]" style={{ color: "#f38ba8" }}>{uploadError}</p>}
-            {error        && <p className="text-[0.62rem]" style={{ color: "#f38ba8" }}>{error}</p>}
+            {uploadStatus && <p className="text-[18px]" style={{ color: "#000000" }}>{uploadStatus}</p>}
+            {uploadError  && <p className="text-[18px]" style={{ color: "#000000" }}>{uploadError}</p>}
+            {error        && <p className="text-[18px]" style={{ color: "#000000" }}>{error}</p>}
           </div>
         )}
       </aside>
@@ -432,13 +610,13 @@ export default function App() {
             <div className="flex items-start gap-3 msg-enter">
               <div
                 className="shrink-0 w-7 h-7 rounded flex items-center justify-center pulse-amber"
-                style={{ background: "rgba(245,166,35,0.12)", border: "1px solid rgba(245,166,35,0.2)", color: "#f5a623" }}
+                style={{ background: "rgba(245,166,35,0.12)", border: "1px solid rgba(245,166,35,0.2)", color: "#000000" }}
               >
                 <IconBot />
               </div>
               <div
                 className="px-4 py-3 rounded flex items-center gap-1.5"
-                style={{ background: "#13161d", border: "1px solid #252a38" }}
+                style={{ background: "#f3f5f9", border: "1px solid #d7dee8" }}
               >
                 <span className="dot" /><span className="dot" /><span className="dot" />
               </div>
@@ -447,17 +625,17 @@ export default function App() {
           <div ref={bottomRef} />
         </div>
 
-        <div className="px-6 pb-5 pt-3 shrink-0" style={{ borderTop: "1px solid #1a1e2a", background: "#0d0f14" }}>
+        <div className="px-6 pb-5 pt-3 shrink-0" style={{ borderTop: "1px solid #e2e8f0", background: "#f7f8fb" }}>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col rounded"
-            style={{ background: "#13161d", border: "1px solid #252a38", transition: "border-color 0.15s" }}
+            style={{ background: "#f3f5f9", border: "1px solid #d7dee8", transition: "border-color 0.15s" }}
             onFocus={e => e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"}
-            onBlur={e => e.currentTarget.style.borderColor = "#252a38"}
+            onBlur={e => e.currentTarget.style.borderColor = "#d7dee8"}
           >
             <input
-              className="w-full px-4 pt-3.5 pb-2 text-[0.82rem] outline-none placeholder:opacity-40 disabled:opacity-30 disabled:cursor-not-allowed"
-              style={{ background: "transparent", color: "#cdd6f4", fontFamily: "'JetBrains Mono', monospace" }}
+              className="w-full px-4 pt-3.5 pb-2 text-[18px] outline-none placeholder:opacity-40 disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{ background: "transparent", color: "#000000", fontFamily: "'JetBrains Mono', monospace" }}
               type="text"
               placeholder="Ask anything — searches, weather, or resume questions…"
               value={input}
@@ -471,29 +649,31 @@ export default function App() {
               }}
             />
             <div className="flex items-center justify-between px-2.5 pb-2.5 pt-1 gap-2">
+              {user.role === "admin" ? (
               <label
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[0.68rem] cursor-pointer select-none transition-all border"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[18px] cursor-pointer select-none transition-all border"
                 style={{
                   background: "transparent",
-                  border: "1px solid #252a38",
-                  color: "#6c7a96",
+                  border: "1px solid #d7dee8",
+                  color: "#000000",
                   cursor: uploading ? "wait" : "pointer",
                   opacity: uploading ? 0.6 : 1,
                 }}
-                onMouseEnter={e => { if (!uploading) { e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"; e.currentTarget.style.color = "#f5a623"; } }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "#252a38"; e.currentTarget.style.color = "#6c7a96"; }}
+                onMouseEnter={e => { if (!uploading) { e.currentTarget.style.borderColor = "rgba(245,166,35,0.35)"; e.currentTarget.style.color = "#000000"; } }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "#d7dee8"; e.currentTarget.style.color = "#000000"; }}
               >
                 {uploading ? <span className="spinner" /> : <IconClip />}
                 <span>{uploading ? "Indexing…" : "Add PDF"}</span>
                 <input ref={fileInputRef} type="file" accept="application/pdf" onChange={handleUpload} disabled={uploading} className="hidden" />
               </label>
+              ) : <span className="text-[18px] px-2" style={{ color: "#000000" }}>PDF upload is admin-only</span>}
               <button
                 type="submit"
                 disabled={!canSend}
                 className="w-8 h-8 flex items-center justify-center rounded border-none cursor-pointer transition-all active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed"
-                style={{ background: canSend ? "#f5a623" : "rgba(245,166,35,0.15)", color: canSend ? "#0d0f14" : "#6c7a96" }}
+                style={{ background: canSend ? "#f5a623" : "rgba(245,166,35,0.15)", color: canSend ? "#000000" : "#000000" }}
               >
-                {loading ? <span className="spinner" style={{ borderTopColor: "#0d0f14", borderColor: "rgba(13,15,20,0.3)" }} /> : <IconSend />}
+                {loading ? <span className="spinner" style={{ borderTopColor: "#4a2f00", borderColor: "rgba(74,47,0,0.3)" }} /> : <IconSend />}
               </button>
             </div>
           </form>

@@ -63,11 +63,12 @@ const chatSlice = createSlice({
       .addCase(sendQuery.rejected, (state, action) => {
         if (action.meta.aborted) return;
         state.loading = false;
-        state.error   = "Could not reach the backend.";
+        const message = action.error.message ?? "Could not reach the backend.";
+        state.error   = message;
         state.messages.push({
           id:      crypto.randomUUID(),
           role:    "agent",
-          text:    "Error: could not reach the backend.",
+          text:    `Error: ${message}`,
           sources: [],
         });
       });

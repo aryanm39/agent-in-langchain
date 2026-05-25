@@ -29,12 +29,12 @@ def save_docs() -> None:
     except Exception as e:
         print(f"[WARN] Failed to save docs: {e}")
 
-# from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-# embeddings = GoogleGenerativeAIEmbeddings(
-#     model="models/gemini-embedding-001",
-#     task_type="retrieval_document",
-#     google_api_key=os.getenv("GEMINI_API_KEY"),
-# )
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/gemini-embedding-001",
+    task_type="retrieval_document",
+    google_api_key=os.getenv("GEMINI_API_KEY"),
+)
 
 # llm = ChatGoogleGenerativeAI(
 #     model="gemini-flash-latest",
@@ -42,10 +42,10 @@ def save_docs() -> None:
 #     google_api_key=os.getenv("GEMINI_API_KEY"),
 # )
 
-from langchain_huggingface import HuggingFaceEmbeddings
-embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
+# from langchain_huggingface import HuggingFaceEmbeddings
+# embeddings = HuggingFaceEmbeddings(
+#     model_name="sentence-transformers/all-MiniLM-L6-v2"
+# )
 
 from langchain_groq import ChatGroq 
 llm = ChatGroq(
