@@ -297,9 +297,6 @@ function AuthScreen({ loading, error, success, onLogin, onSignup, onClearError, 
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "#f7f8fb", fontFamily: "'JetBrains Mono', monospace" }}>
       <div className="w-full max-w-md rounded-xl p-6" style={{ background: "#ffffff", border: "1px solid #d7dee8", boxShadow: "0 24px 80px rgba(15,23,42,0.12)" }}>
         <div className="mb-6">
-          <div className="font-display text-[20px] font-bold" style={{ color: "#000000", fontFamily: "'Syne', sans-serif", letterSpacing: "-0.02em" }}>
-            agent<span style={{ color: "#000000" }}>.</span><span style={{ color: "#000000" }}>run</span>
-          </div>
           <p className="text-[18px] mt-2" style={{ color: "#000000" }}>
             {isSignup ? "Create an account to start chatting." : "Login to continue to your assistant."}
           </p>
@@ -516,9 +513,6 @@ export default function App() {
       <aside className="w-[340px] min-w-[340px] flex flex-col overflow-hidden shrink-0" style={{ background: "#ffffff", borderRight: "1px solid #e2e8f0" }}>
 
         <div className="px-4 pt-5 pb-4 shrink-0" style={{ borderBottom: "1px solid #e2e8f0" }}>
-          <div className="font-display text-[20px] font-bold" style={{ color: "#000000", fontFamily: "'Syne', sans-serif", letterSpacing: "-0.02em" }}>
-            agent<span style={{ color: "#000000" }}>.</span><span style={{ color: "#000000" }}>run</span>
-          </div>
           <div className="flex items-center justify-between gap-2 mt-3">
             <div className="min-w-0">
               <p className="text-[18px] break-all" style={{ color: "#000000" }}>{user.username}</p>
